@@ -11,7 +11,7 @@ library(survey)
 
 inf.fun <- function(fit) {
   dm <- model.matrix(fit)
-  Ihat <- (t(dm) %*% (dm * fit$fitted.values * (1 - fit$fitted.values)))
+  Ihat <- (t(dm) %*% (dm * fit$fitted.values * (1 - fit$fitted.values))) / nrow(dm)
   ## influence function
   infl <- (dm * resid(fit, type = "response")) %*% solve(Ihat)
   infl
@@ -19,7 +19,7 @@ inf.fun <- function(fit) {
 
 inf.prior = function(dm, para.val){
   fit.val = exp(rowSums(dm %*% diag(para.val))) / (1+exp(rowSums(dm %*% diag(para.val))))
-  Ihat <- (t(dm) %*% (dm * fit.val * (1 - fit.val)))
+  Ihat <- (t(dm) %*% (dm * fit.val * (1 - fit.val))) / nrow(dm)
   infl = as.matrix(dm * (nwts$relaps - fit.val)) %*% solve(Ihat)
   infl
 }
